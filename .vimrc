@@ -1,16 +1,24 @@
-:source ./.skytap-vimrc
+:source ~/.skytap-vimrc
 execute pathogen#infect()
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
-
-
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_javascript_eslint_exe='$(npm bin)/eslint'
 let g:syntastic_javascript_checkers = ['eslint']
+let g:syntastic_ignore_files = ['css']
+let g:ultisnips_javascript = {
+    \ 'keyword-spacing': 'always',
+    \ 'semi': 'never',
+    \ 'space-before-function-paren': 'always',
+    \ }
+" ignore all messages that are not errors
+let g:syntastic_quiet_messages = {
+    \ "!level":  "errors",}
+command! NS SyntasticReset
 syntax on
 filetype plugin indent on
 " fzf options
@@ -60,7 +68,10 @@ set statusline+=%F
 " clears highlight on escape
 nnoremap <CR> :noh<CR><esc>
 let mapleader = ","
-nnoremap <Leader>, :noh<cr>
+nnoremap <Leader>c :noh<cr>
+noremap <Leader>, @a
+noremap <Leader>n :lnext<cr>
+noremap <Leader>p :lprevious<cr>
 
 set autoread
 " sets haml syntax for hamlc files
@@ -77,6 +88,7 @@ let g:session_autoload = 'yes'
 nnoremap <C-CR> O<Esc>j
 nnoremap <CR> o<Esc>k
 nnoremap [[ :tabprevious<CR>
+nnoremap ]] :tabnext<CR>
 nnoremap ]] :tabnext<CR>
 function! DisplayName(name)
   exe 'visual y'
@@ -168,10 +180,12 @@ function! s:stepmatch(pattern,step)
   catch
     echo vimpattern
     echo 'Pattern not supported'
+    return 0
   endtry
 endfunction
 
 let g:cucumberStepPatterns = s:getallsteps()
+let g:jsx_ext_required = 0
 
 function! FindStep()
   let files = []
@@ -200,32 +214,27 @@ function! FindStep()
 endfunction
 
 nmap ds :call FindStep()<cr>
+" sort visual block
+vmap s :sort /\ze\%V/<cr>
 "end cucumber step  Script-----------------------------
 
 "dein Scripts-----------------------------
 if &compatible
   set nocompatible               " Be iMproved
 endif
+" Required:
+set runtimepath+=/home/vagrant/.vim//repos/github.com/Shougo/dein.vim
 
 " Required:
-set runtimepath+=~/.vim/repos/github.com/Shougo/dein.vim
-
-" Required:
-if dein#load_state('~/.vim/')
-  call dein#begin('~/.vim/')
+if dein#load_state('/home/vagrant/.vim/')
+  call dein#begin('/home/vagrant/.vim/')
 
   " Let dein manage dein
   " Required:
-  call dein#add('~/.vim/repos/github.com/Shougo/dein.vim')
+  call dein#add('/home/vagrant/.vim//repos/github.com/Shougo/dein.vim')
 
-  " Add or remove your plugins here:
-  call dein#add('Shougo/neosnippet.vim')
-  call dein#add('Shougo/neosnippet-snippets')
-
-  " You can specify revision/branch/tag.
-  call dein#add('Shougo/vimshell', { 'rev': '3787e5' })
   call dein#add('scrooloose/nerdtree',
-      \{'on_cmd': 'NERDTreeToggle'})
+    \{'on_cmd': 'NERDTreeToggle'})
 
   call dein#add('rking/ag.vim',
       \{'on_cmd': 'Ag'})
@@ -234,6 +243,11 @@ if dein#load_state('~/.vim/')
   call dein#add('junegunn/fzf.vim')
   call dein#add('digitaltoad/vim-pug')
   call dein#add('vim-syntastic/syntastic')
+  call dein#add('pangloss/vim-javascript')
+  call dein#add('mxw/vim-jsx')
+  call dein#add('jiangmiao/auto-pairs')
+  call dein#add('SirVer/ultisnips')
+  call dein#add('honza/vim-snippets')
 
   " Required:
   call dein#end()
@@ -250,4 +264,3 @@ syntax enable
 "endif
 
 "End dein Scripts-------------------------
-
