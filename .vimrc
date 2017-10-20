@@ -1,24 +1,19 @@
 :source ~/.skytap-vimrc
 execute pathogen#infect()
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
-let g:syntastic_javascript_eslint_exe='$(npm bin)/eslint'
-let g:syntastic_javascript_checkers = ['eslint']
-let g:syntastic_ignore_files = ['css']
-let g:ultisnips_javascript = {
-    \ 'keyword-spacing': 'always',
-    \ 'semi': 'never',
-    \ 'space-before-function-paren': 'always',
-    \ }
-" ignore all messages that are not errors
-let g:syntastic_quiet_messages = {
-    \ "!level":  "errors",}
-command! NS SyntasticReset
+function! LinterStatus() abort
+    let l:counts = ale#statusline#Count(bufnr(''))
+
+    let l:all_errors = l:counts.error + l:counts.style_error
+    let l:all_non_errors = l:counts.total - l:all_errors
+
+    return l:counts.total == 0 ? 'OK' : printf(
+    \   '%dW %dE',
+    \   all_non_errors,
+    \   all_errors
+    \)
+endfunction
+
+set statusline=%{LinterStatus()}
 syntax on
 filetype plugin indent on
 " fzf options
@@ -47,6 +42,7 @@ autocmd FileType javascript set formatprg=prettier\ --stdin
 :inoremap ;; <ESC>
 set vb
 set number
+set relativenumber " show relative line numbers
 set ruler
 set showcmd
 set showmatch
@@ -104,6 +100,7 @@ set autochdir
 set suffixesadd+=.coffee
 set suffixesadd+=.js
 set suffixesadd+=.jade
+set suffixesadd+=.gql
 "get rid of psky swap files
 set noswapfile
 " shortcut to edit vimrc
@@ -239,15 +236,17 @@ if dein#load_state('/home/vagrant/.vim/')
   call dein#add('rking/ag.vim',
       \{'on_cmd': 'Ag'})
 
+  call dein#add('itchyny/lightline.vim')
+  call dein#add('w0rp/ale')
   call dein#add('junegunn/fzf', { 'build': './install', 'merged': 0 })
   call dein#add('junegunn/fzf.vim')
   call dein#add('digitaltoad/vim-pug')
-  call dein#add('vim-syntastic/syntastic')
   call dein#add('pangloss/vim-javascript')
   call dein#add('mxw/vim-jsx')
   call dein#add('jiangmiao/auto-pairs')
   call dein#add('SirVer/ultisnips')
   call dein#add('honza/vim-snippets')
+  call dein#add('jparise/vim-graphql')
 
   " Required:
   call dein#end()
