@@ -1,19 +1,4 @@
 :source ~/.skytap-vimrc
-execute pathogen#infect()
-function! LinterStatus() abort
-    let l:counts = ale#statusline#Count(bufnr(''))
-
-    let l:all_errors = l:counts.error + l:counts.style_error
-    let l:all_non_errors = l:counts.total - l:all_errors
-
-    return l:counts.total == 0 ? 'OK' : printf(
-    \   '%dW %dE',
-    \   all_non_errors,
-    \   all_errors
-    \)
-endfunction
-
-set statusline=%{LinterStatus()}
 syntax on
 filetype plugin indent on
 " fzf options
@@ -214,30 +199,31 @@ nmap ds :call FindStep()<cr>
 " sort visual block
 vmap s :sort /\ze\%V/<cr>
 "end cucumber step  Script-----------------------------
-
+"
 "dein Scripts-----------------------------
 if &compatible
   set nocompatible               " Be iMproved
 endif
-" Required:
-set runtimepath+=/home/vagrant/.vim//repos/github.com/Shougo/dein.vim
 
 " Required:
-if dein#load_state('/home/vagrant/.vim/')
-  call dein#begin('/home/vagrant/.vim/')
+set runtimepath+=/home/vagrant/.cache/dein/repos/github.com/Shougo/dein.vim
+
+" Required:
+if dein#load_state('/home/vagrant/.cache/dein')
+  call dein#begin('/home/vagrant/.cache/dein')
 
   " Let dein manage dein
   " Required:
-  call dein#add('/home/vagrant/.vim//repos/github.com/Shougo/dein.vim')
+  call dein#add('/home/vagrant/.cache/dein/repos/github.com/Shougo/dein.vim')
 
-  call dein#add('scrooloose/nerdtree',
-    \{'on_cmd': 'NERDTreeToggle'})
+  call dein#add('scrooloose/nerdtree')
 
   call dein#add('rking/ag.vim',
       \{'on_cmd': 'Ag'})
 
-  call dein#add('itchyny/lightline.vim')
   call dein#add('w0rp/ale')
+  call dein#add('itchyny/lightline.vim')
+  call dein#add('maximbaz/lightline-ale')
   call dein#add('junegunn/fzf', { 'build': './install', 'merged': 0 })
   call dein#add('junegunn/fzf.vim')
   call dein#add('digitaltoad/vim-pug')
@@ -288,6 +274,20 @@ let g:lightline = {
       \ }
 
 autocmd User ALELint call lightline#update()
+function! LinterStatus() abort
+    let l:counts = ale#statusline#Count(bufnr(''))
+
+    let l:all_errors = l:counts.error + l:counts.style_error
+    let l:all_non_errors = l:counts.total - l:all_errors
+
+    return l:counts.total == 0 ? 'OK' : printf(
+    \   '%dW %dE',
+    \   all_non_errors,
+    \   all_errors
+    \)
+endfunction
+
+set statusline=%{LinterStatus()}
 
 " ale + lightline
 function! LightlineLinterWarnings() abort
@@ -310,3 +310,4 @@ function! LightlineLinterOK() abort
   let l:all_non_errors = l:counts.total - l:all_errors
   return l:counts.total == 0 ? '✓' : ''
 endfunction
+set laststatus=2
