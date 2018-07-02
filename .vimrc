@@ -71,6 +71,8 @@ nnoremap <CR> o<Esc>k
 nnoremap [[ :tabprevious<CR>
 nnoremap ]] :tabnext<CR>
 nnoremap ]] :tabnext<CR>
+nmap \\ gcc
+vmap \\ gc
 function! DisplayName(name)
   exe 'visual y'
   exe ':Ag \<C-R>"'
@@ -216,7 +218,7 @@ if dein#load_state('/home/vagrant/.cache/dein')
   " Required:
   call dein#add('/home/vagrant/.cache/dein/repos/github.com/Shougo/dein.vim')
 
-  call dein#add('scrooloose/nerdtree')
+  call dein#add('tpope/vim-vinegar')
 
   call dein#add('rking/ag.vim',
       \{'on_cmd': 'Ag'})
@@ -225,14 +227,19 @@ if dein#load_state('/home/vagrant/.cache/dein')
   call dein#add('itchyny/lightline.vim')
   call dein#add('maximbaz/lightline-ale')
   call dein#add('junegunn/fzf', { 'build': './install', 'merged': 0 })
+  call dein#add('Townk/vim-autoclose')
   call dein#add('junegunn/fzf.vim')
   call dein#add('digitaltoad/vim-pug')
   call dein#add('pangloss/vim-javascript')
   call dein#add('mxw/vim-jsx')
-  call dein#add('jiangmiao/auto-pairs')
   call dein#add('SirVer/ultisnips')
   call dein#add('honza/vim-snippets')
   call dein#add('jparise/vim-graphql')
+  call dein#add('kchmck/vim-coffee-script')
+  call dein#add('airblade/vim-gitgutter')
+  call dein#add('tpope/vim-surround')
+  call dein#add('tpope/vim-commentary')
+  call dein#add('ervandew/supertab')
 
   " Required:
   call dein#end()
@@ -257,7 +264,7 @@ syntax enable
 " For more info on how this works, see lightline documentation.
 let g:lightline = {
       \ 'active': {
-      \   'left': [ [ 'filename' ],
+      \   'left': [ [ 'absolutepath' ],
       \              [ 'linter_warnings', 'linter_errors', 'linter_ok' ]]
       \
       \ },
