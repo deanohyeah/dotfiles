@@ -27,7 +27,6 @@ autocmd FileType javascript set formatprg=prettier\ --stdin
 :inoremap ;; <ESC>
 set vb
 set number
-set relativenumber " show relative line numbers
 set ruler
 set showcmd
 set showmatch
@@ -81,13 +80,6 @@ vnoremap xl :call DisplayName('bl')<cr>
 nmap gf <c-w>gf
 " stops cw at .
 set iskeyword-=.
-" set path to current file dir
-set autochdir
-" allows gf to open files without extensions
-set suffixesadd+=.coffee
-set suffixesadd+=.js
-set suffixesadd+=.jade
-set suffixesadd+=.gql
 "get rid of psky swap files
 set noswapfile
 " shortcut to edit vimrc
@@ -227,7 +219,6 @@ if dein#load_state('/home/vagrant/.cache/dein')
   call dein#add('itchyny/lightline.vim')
   call dein#add('maximbaz/lightline-ale')
   call dein#add('junegunn/fzf', { 'build': './install', 'merged': 0 })
-  call dein#add('Townk/vim-autoclose')
   call dein#add('junegunn/fzf.vim')
   call dein#add('digitaltoad/vim-pug')
   call dein#add('pangloss/vim-javascript')
@@ -240,6 +231,8 @@ if dein#load_state('/home/vagrant/.cache/dein')
   call dein#add('tpope/vim-surround')
   call dein#add('tpope/vim-commentary')
   call dein#add('ervandew/supertab')
+  call dein#add('jiangmiao/auto-pairs')
+  call dein#add('vim-ruby/vim-ruby')
 
   " Required:
   call dein#end()
@@ -318,3 +311,29 @@ function! LightlineLinterOK() abort
   return l:counts.total == 0 ? '✓' : ''
 endfunction
 set laststatus=2
+
+function! ModifiedGF()
+  let files = []
+  let line = getline('.')
+  let fullPath = split(line)[3]
+  let hasMatch = fullPath !~ '@skytap'
+  if hasMatch
+    execute "normal! \<c-w>gf"
+    return
+  endif
+
+  let packagesPath = substitute(fullPath, '@skytap', 'packages', 'g')
+  let packagesPath = substitute(packagesPath, "'", '', 'g')
+  let packagesPath = substitute(packagesPath, "lib", 'src', 'g')
+  execute "tabfind" packagesPath
+endfunction
+
+" set path to current file dir
+set autochdir
+" allows gf to open files without extensions
+set suffixesadd+=.coffee
+set suffixesadd+=.js
+set suffixesadd+=.jade
+set suffixesadd+=.gql
+
+nmap gf :call ModifiedGF()<cr>
