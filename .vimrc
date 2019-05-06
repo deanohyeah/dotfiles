@@ -67,9 +67,6 @@ let g:session_autoload = 'yes'
 " adds blank space
 nnoremap <C-CR> O<Esc>j
 nnoremap <CR> o<Esc>k
-nnoremap [[ :tabprevious<CR>
-nnoremap ]] :tabnext<CR>
-nnoremap ]] :tabnext<CR>
 nmap \\ gcc
 vmap \\ gc
 function! DisplayName(name)
@@ -336,4 +333,6 @@ set suffixesadd+=.js
 set suffixesadd+=.jade
 set suffixesadd+=.gql
 
-nmap gf :call ModifiedGF()<cr>
+"nmap gf :call ModifiedGF()<cr>
+nnoremap <nowait><buffer> [ :tabprevious<CR>
+nnoremap <nowait><buffer> ] :tabnext<CR>
