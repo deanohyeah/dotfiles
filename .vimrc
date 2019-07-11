@@ -23,7 +23,6 @@ let g:fzf_action = {
 " gq use prettier https://github.com/jlongster/prettier
 autocmd FileType javascript set formatprg=prettier\ --stdin
 
-:colorscheme monokai
 :inoremap ;; <ESC>
 set vb
 set number
@@ -197,15 +196,15 @@ if &compatible
 endif
 
 " Required:
-set runtimepath+=/home/vagrant/.cache/dein/repos/github.com/Shougo/dein.vim
+set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 
 " Required:
-if dein#load_state('/home/vagrant/.cache/dein')
-  call dein#begin('/home/vagrant/.cache/dein')
+if dein#load_state('~/.cache/dein')
+  call dein#begin('~/.cache/dein')
 
   " Let dein manage dein
   " Required:
-  call dein#add('/home/vagrant/.cache/dein/repos/github.com/Shougo/dein.vim')
+  call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
 
   call dein#add('tpope/vim-vinegar')
 
@@ -235,6 +234,7 @@ if dein#load_state('/home/vagrant/.cache/dein')
   call dein#end()
   call dein#save_state()
 endif
+:colorscheme monokai
 
 " Required:
 filetype plugin indent on
