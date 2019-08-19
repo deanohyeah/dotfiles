@@ -1,6 +1,12 @@
 :source ~/.skytap-vimrc
 syntax on
 filetype plugin indent on
+autocmd!
+" Tab navigation like Firefox.
+nnoremap ]] :tabnext<CR>
+nnoremap [[ :tabprev<CR>
+nnoremap tn :tabnew<CR>
+
 " fzf options
 let g:fzf_colors =
 \ { 'fg':      ['fg', 'Normal'],
@@ -89,28 +95,6 @@ highlight Search ctermfg=cyan
 hi IncSearch guibg=yellow
 hi IncSearch guifg=yellow
 hi IncSearch guibg=yellow
-
-function! WrapForTmux(s)
-  if !exists('$TMUX')
-    return a:s
-  endif
-
-  let tmux_start = "\<Esc>Ptmux;"
-  let tmux_end = "\<Esc>\\"
-
-  return tmux_start . substitute(a:s, "\<Esc>", "\<Esc>\<Esc>", 'g') . tmux_end
-endfunction
-
-let &t_SI .= WrapForTmux("\<Esc>[?2004h")
-let &t_EI .= WrapForTmux("\<Esc>[?2004l")
-
-function! XTermPasteBegin()
-  set pastetoggle=<Esc>[201~
-  set paste
-  return ""
-endfunction
-
-inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
 "cucumber step  Script-----------------------------
 if exists("b:cuke_root")
@@ -215,7 +199,6 @@ if dein#load_state('~/.cache/dein')
   call dein#add('itchyny/lightline.vim')
   call dein#add('maximbaz/lightline-ale')
   call dein#add('junegunn/fzf', { 'build': './install', 'merged': 0 })
-  call dein#add('junegunn/fzf.vim')
   call dein#add('digitaltoad/vim-pug')
   call dein#add('pangloss/vim-javascript')
   call dein#add('mxw/vim-jsx')
@@ -229,6 +212,7 @@ if dein#load_state('~/.cache/dein')
   call dein#add('ervandew/supertab')
   call dein#add('jiangmiao/auto-pairs')
   call dein#add('vim-ruby/vim-ruby')
+  call dein#add('sickill/vim-monokai')
 
   " Required:
   call dein#end()
@@ -333,6 +317,26 @@ set suffixesadd+=.js
 set suffixesadd+=.jade
 set suffixesadd+=.gql
 
-"nmap gf :call ModifiedGF()<cr>
-nnoremap <nowait><buffer> [ :tabprevious<CR>
-nnoremap <nowait><buffer> ] :tabnext<CR>
+" https://coderwall.com/p/if9mda/automatically-set-paste-mode-in-vim-when-pasting-in-insert-mode
+function! WrapForTmux(s)
+  if !exists('$TMUX')
+    return a:s
+  endif
+
+  let tmux_start = "\<Esc>Ptmux;"
+  let tmux_end = "\<Esc>\\"
+
+  return tmux_start . substitute(a:s, "\<Esc>", "\<Esc>\<Esc>", 'g') . tmux_end
+endfunction
+
+let &t_SI .= WrapForTmux("\<Esc>[?2004h")
+let &t_EI .= WrapForTmux("\<Esc>[?2004l")
+
+function! XTermPasteBegin()
+  set pastetoggle=<Esc>[201~
+  set paste
+  return ""
+endfunction
+
+inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+
