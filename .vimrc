@@ -1,11 +1,51 @@
 :source ~/.skytap-vimrc
+
+" Plugins will be downloaded under the specified directory.
+call plug#begin('~/.vim/plugged')
+
+" " Declare the list of plugins.
+Plug 'digitaltoad/vim-pug'
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
+Plug 'honza/vim-snippets'
+Plug 'dense-analysis/ale'
+Plug 'jparise/vim-graphql'
+Plug 'kchmck/vim-coffee-script'
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
+Plug 'ervandew/supertab'
+Plug 'jiangmiao/auto-pairs'
+Plug 'vim-ruby/vim-ruby'
+Plug 'jremmen/vim-ripgrep'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all'  }
+Plug 'junegunn/fzf.vim'
+Plug 'sickill/vim-monokai'
+Plug 'vim-airline/vim-airline'
+
+" " List ends here. Plugins become visible to Vim after this call.
+call plug#end()
+
 syntax on
+colorscheme monokai
+let g:airline#extensions#tabline#enabled = 1
 filetype plugin indent on
-autocmd!
 " Tab navigation like Firefox.
 nnoremap ]] :tabnext<CR>
 nnoremap [[ :tabprev<CR>
 nnoremap tn :tabnew<CR>
+
+" filer explorer seetings
+nnoremap - :Vexplore<CR>
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 4
+let g:netrw_altv = 1
+let g:netrw_winsize = 15
+augroup ProjectDrawer
+    autocmd!
+      autocmd VimEnter * :Vexplore
+    augroup END
 
 " fzf options
 let g:fzf_colors =
@@ -142,7 +182,7 @@ endfunction
 
 let g:cucumberStepPatterns = s:getallsteps()
 let g:jsx_ext_required = 0
-
+let g:rg_highlight = 1
 function! FindStep()
   let files = []
   let line = getline('.')
@@ -174,124 +214,8 @@ nmap ds :call FindStep()<cr>
 vmap s :sort /\ze\%V/<cr>
 "end cucumber step  Script-----------------------------
 "
-"dein Scripts-----------------------------
-if &compatible
-  set nocompatible               " Be iMproved
-endif
 
-" Required:
-set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 
-" Required:
-if dein#load_state('~/.cache/dein')
-  call dein#begin('~/.cache/dein')
-
-  " Let dein manage dein
-  " Required:
-  call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
-
-  call dein#add('tpope/vim-vinegar')
-
-  call dein#add('rking/ag.vim',
-      \{'on_cmd': 'Ag'})
-
-  call dein#add('w0rp/ale')
-  call dein#add('itchyny/lightline.vim')
-  call dein#add('maximbaz/lightline-ale')
-  call dein#add('junegunn/fzf', { 'build': './install', 'merged': 0 })
-  call dein#add('digitaltoad/vim-pug')
-  call dein#add('pangloss/vim-javascript')
-  call dein#add('mxw/vim-jsx')
-  call dein#add('SirVer/ultisnips')
-  call dein#add('honza/vim-snippets')
-  call dein#add('jparise/vim-graphql')
-  call dein#add('kchmck/vim-coffee-script')
-  call dein#add('airblade/vim-gitgutter')
-  call dein#add('tpope/vim-surround')
-  call dein#add('tpope/vim-commentary')
-  call dein#add('ervandew/supertab')
-  call dein#add('jiangmiao/auto-pairs')
-  call dein#add('vim-ruby/vim-ruby')
-  call dein#add('sickill/vim-monokai')
-
-  " Required:
-  call dein#end()
-  call dein#save_state()
-endif
-:colorscheme monokai
-
-" Required:
-filetype plugin indent on
-syntax enable
-
-" If you want to install not installed plugins on startup.
-"if dein#check_install()
-"  call dein#install()
-"endif
-
-"End dein Scripts-------------------------
-" This is regular lightline configuration, we just added
-" 'linter_warnings', 'linter_errors' and 'linter_ok' to
-" the active right panel. Feel free to move it anywhere.
-" `component_expand' and `component_type' are required.
-"
-" For more info on how this works, see lightline documentation.
-let g:lightline = {
-      \ 'active': {
-      \   'left': [ [ 'absolutepath' ],
-      \              [ 'linter_warnings', 'linter_errors', 'linter_ok' ]]
-      \
-      \ },
-      \ 'component_expand': {
-      \   'linter_warnings': 'LightlineLinterWarnings',
-      \   'linter_errors': 'LightlineLinterErrors',
-      \   'linter_ok': 'LightlineLinterOK'
-      \ },
-      \ 'component_type': {
-      \   'linter_warnings': 'warning',
-      \   'linter_errors': 'error',
-      \   'linter_ok': 'ok'
-      \ },
-      \ }
-
-autocmd User ALELint call lightline#update()
-function! LinterStatus() abort
-    let l:counts = ale#statusline#Count(bufnr(''))
-
-    let l:all_errors = l:counts.error + l:counts.style_error
-    let l:all_non_errors = l:counts.total - l:all_errors
-
-    return l:counts.total == 0 ? 'OK' : printf(
-    \   '%dW %dE',
-    \   all_non_errors,
-    \   all_errors
-    \)
-endfunction
-
-set statusline=%{LinterStatus()}
-
-" ale + lightline
-function! LightlineLinterWarnings() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d --', all_non_errors)
-endfunction
-
-function! LightlineLinterErrors() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d >>', all_errors)
-endfunction
-
-function! LightlineLinterOK() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '✓' : ''
-endfunction
-set laststatus=2
 
 function! ModifiedGF()
   let files = []
@@ -339,4 +263,3 @@ function! XTermPasteBegin()
 endfunction
 
 inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
-
