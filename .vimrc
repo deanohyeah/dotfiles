@@ -23,7 +23,6 @@ Plug 'tpope/vim-commentary'
 Plug 'ervandew/supertab'
 Plug 'jiangmiao/auto-pairs'
 Plug 'vim-ruby/vim-ruby'
-Plug 'jremmen/vim-ripgrep'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all'  }
 Plug 'junegunn/fzf.vim'
 Plug 'sickill/vim-monokai'
@@ -95,6 +94,7 @@ set shiftwidth=2
 set autoindent
 set smartindent
 set expandtab
+set backspace=indent,eol,start
 " Add full file path to your existing statusline
 set statusline+=%F
 " clears highlight on escape
