@@ -1,5 +1,3 @@
-:source ~/.skytap-vimrc
-
 " installs vim plug and does initial install of plugins
 if empty(glob('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -12,7 +10,6 @@ call plug#begin('~/.vim/plugged')
 " " Declare the list of plugins.
 Plug 'digitaltoad/vim-pug'
 Plug 'pangloss/vim-javascript'
-Plug 'mxw/vim-jsx'
 Plug 'honza/vim-snippets'
 Plug 'dense-analysis/ale'
 Plug 'jparise/vim-graphql'
@@ -27,9 +24,16 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all'  }
 Plug 'junegunn/fzf.vim'
 Plug 'sickill/vim-monokai'
 Plug 'vim-airline/vim-airline'
+Plug 'ap/vim-css-color'
+"Typescript Plugins
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
 
-" " List ends here. Plugins become visible to Vim after this call.
+"fgarland/typescript-vim " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
+
+set path+=~/repos/PortalDev/src/
+set path+=~/repos/frontend-style-service/src/
 
 syntax on
 colorscheme monokai
@@ -40,9 +44,14 @@ nnoremap ]] :tabnext<CR>
 nnoremap [[ :tabprev<CR>
 nnoremap tn :tabnew<CR>
 
+" copy selected to mac clipboard
+" As noted, this requires +clipboard out of vim --version, which indicate the
+" availability of clipboard support, -clipboard means no.
+vmap <C-c> "*y
+
 " filer explorer seetings
 nnoremap - :Vexplore<CR>
-nnoremap  <C-P> :FZF<CR>
+nnoremap  <C-P> :GFiles<CR>
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
 let g:netrw_browse_split = 4
@@ -101,9 +110,9 @@ set statusline+=%F
 nnoremap <CR> :noh<CR><esc>
 let mapleader = ","
 nnoremap <Leader>c :noh<cr>
+nnoremap <Leader>r :e ~/repos/rum/package.json<cr>
+nnoremap <Leader>p :e ~/repos/PortalDev/package.json<cr>
 noremap <Leader>, @a
-noremap <Leader>n :lnext<cr>
-noremap <Leader>p :lprevious<cr>
 
 set autoread
 " sets haml syntax for hamlc files
@@ -111,14 +120,13 @@ au BufRead,BufNewFile *.hamlc set ft=haml
 autocmd BufNewFile,BufRead *.scss set ft=scss.css
 " removes whitespace on save
 au BufWritePre * :%s/\s\+$//e
-" sets tabs for scss files
-autocmd FileType scss setlocal tabstop=4|set shiftwidth=4|set expandtab|set softtabstop=4
 " saves session of open tabs
 let g:session_autosave = 'yes'
 let g:session_autoload = 'yes'
 " adds blank space
 nnoremap <C-CR> O<Esc>j
-nnoremap <CR> o<Esc>k
+" nnoremap <CR> o<Esc>k
+nnoremap <CR> i<CR><Esc>
 nmap \\ gcc
 vmap \\ gc
 function! DisplayName(name)
@@ -143,87 +151,6 @@ hi IncSearch guibg=yellow
 hi IncSearch guifg=yellow
 hi IncSearch guibg=yellow
 
-"cucumber step  Script-----------------------------
-if exists("b:cuke_root")
-  let b:cuke_steps_glob = b:cuke_root.'/**/*'
-endif
-
-function! s:getallsteps()
-  let step_pattern =  '\/\^.*$\/'
-  let steps = []
-  for file in split(glob(b:cuke_steps_glob),"\n")
-    let lines = readfile(file)
-    let num = 0
-    for line in lines
-      let num += 1
-      if line =~ step_pattern
-        let type = matchstr(line,'Given\|When\|Then')
-        let steps += [[file, num, type, matchstr(line,step_pattern)]]
-      endif
-    endfor
-  endfor
-  return steps
-endfunction
-
-function! s:stepmatch(pattern,step)
-  if a:pattern =~ '^/.*/$'
-    let pattern = a:pattern[1:-2]
-  else
-    return 0
-  endif
-  try
-    " convert to vim pattern
-    let vimpattern = substitute(substitute(pattern,'\\\@<!(?:','%(','g'),'\\\@<!\*?','{-}','g')
-    " vim doesn't support +?
-    let vimpattern = substitute(vimpattern, '+?', '+', 'g')
-    " \v is for very magic for more normal regex suppot
-    if a:step =~# '\v'.vimpattern
-      return 1
-    endif
-  catch
-    echo vimpattern
-    echo 'Pattern not supported'
-    return 0
-  endtry
-endfunction
-
-let g:cucumberStepPatterns = s:getallsteps()
-let g:jsx_ext_required = 0
-let g:rg_highlight = 1
-function! FindStep()
-  let files = []
-  let line = getline('.')
-  " strip whitespace and type
-  let lineTypeStripped = matchend(line, 'Given \|When \|Then ')
-  let line  =  strpart(line, lineTypeStripped)
-  for stepPattern in g:cucumberStepPatterns
-    let hasMatch = s:stepmatch(stepPattern[3],line)
-    if hasMatch
-      let files = add(files, stepPattern)
-    endif
-  endfor
-  if len(files) == 1
-    execute "tabe +" . files[0][1] . " " . files[0][0]
-  else
-    for file in files
-      " only open the zombie one for now
-      " make extensible in the future
-      if file[0] =~ 'zombie'
-        execute "tabe +" . file[1] . " " . file[0]
-      endif
-      echo file
-    endfor
-  endif
-endfunction
-
-nmap ds :call FindStep()<cr>
-" sort visual block
-vmap s :sort /\ze\%V/<cr>
-"end cucumber step  Script-----------------------------
-"
-
-
-
 function! ModifiedGF()
   let files = []
   let line = getline('.')
@@ -247,6 +174,10 @@ set suffixesadd+=.coffee
 set suffixesadd+=.js
 set suffixesadd+=.jade
 set suffixesadd+=.gql
+set suffixesadd+=.ts
+set suffixesadd+=.d.ts
+set suffixesadd+=reducer.ts
+set suffixesadd+=.html
 
 " https://coderwall.com/p/if9mda/automatically-set-paste-mode-in-vim-when-pasting-in-insert-mode
 function! WrapForTmux(s)
